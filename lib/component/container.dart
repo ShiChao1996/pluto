@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import './navigationBar.dart';
+import './bodyCard.dart';
 
 class MyContainer extends StatefulWidget {
   @override
@@ -9,11 +10,13 @@ class MyContainer extends StatefulWidget {
 class MyContainerState extends State<MyContainer>
     with TickerProviderStateMixin {
   List<NavigationIconView> _navigationViews;
+  List<BodyCard> _contents;
   int _currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
+
     _navigationViews = <NavigationIconView>[
       new NavigationIconView(
         icon: const Icon(Icons.apps),
@@ -40,6 +43,56 @@ class MyContainerState extends State<MyContainer>
         vsync: this,
       )
     ];
+
+    _contents = <BodyCard>[
+      new BodyCard(
+        child: const Icon(Icons.apps),
+        vsync: this,
+      ),
+      new BodyCard(
+        child: const Icon(Icons.backup),
+        vsync: this,
+      ),
+      new BodyCard(
+        child: const Icon(Icons.close),
+        vsync: this,
+      ),
+      new BodyCard(
+        child: const Icon(Icons.account_circle),
+        vsync: this,
+      )
+    ];
+
+    for (NavigationIconView view in _navigationViews)
+      view.controller.addListener(_rebuild);
+
+    _contents[_currentIndex].controller.value = 1.0;
+  }
+
+  void _rebuild() {
+    setState(() {
+      // Rebuild in order to animate views.
+    });
+  }
+
+  Widget _buildTransitionsStack() {
+    final List<FadeTransition> transitions = <FadeTransition>[];
+
+     for (BodyCard view in _contents)
+      transitions.add(view.transition(context));
+    /*for (NavigationIconView view in _navigationViews)
+      transitions.add(view.transition(context));*/
+
+    // We want to have the newly animating (fading in) views on top.
+    transitions.sort((FadeTransition a, FadeTransition b) {
+      final Animation<double> aAnimation = a.listenable;
+      final Animation<double> bAnimation = b.listenable;
+      final double aValue = aAnimation.value;
+      final double bValue = bAnimation.value;
+      return aValue.compareTo(bValue);
+    });
+
+    return new Stack(children: transitions);
   }
 
   @override
@@ -52,16 +105,16 @@ class MyContainerState extends State<MyContainer>
       type: BottomNavigationBarType.shifting,
       onTap: (int index) {
         setState(() {
-          _navigationViews[_currentIndex].controller.reverse();
+          _contents[_currentIndex].controller.reverse();
           _currentIndex = index;
-          _navigationViews[_currentIndex].controller.forward();
+          _contents[_currentIndex].controller.forward();
         });
       },
     );
 
     return new Scaffold(
       body: new Center(
-        child: new Text("ddd"),
+          child: _buildTransitionsStack()
       ),
       bottomNavigationBar: botNavBar,
     );

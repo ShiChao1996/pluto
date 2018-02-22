@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
 
 
-class NavigationIconView {
-  NavigationIconView({
-    Widget icon,
-    Widget title,
-    Color color,
+class BodyCard {
+  BodyCard({
+    Widget child,
     TickerProvider vsync
   })
-      : icon = icon,
-        _color = color,
-        item = new BottomNavigationBarItem(
-          icon: icon, title: title, backgroundColor: color,
-        ),
+      : _child = child,
         controller = new AnimationController(
             vsync: vsync, duration: kThemeAnimationDuration) {
     animation = new CurvedAnimation(
@@ -21,15 +15,13 @@ class NavigationIconView {
     );
   }
 
-  final Widget icon;
-  final BottomNavigationBarItem item;
-  final Color _color;
   final AnimationController controller;
   CurvedAnimation animation;
+  final Widget _child;
 
   FadeTransition transition(BuildContext context) {
     Color iconColor;
-    iconColor = _color;
+    iconColor = Colors.blueGrey;
 
     return new FadeTransition(
       opacity: animation,
@@ -44,7 +36,7 @@ class NavigationIconView {
             color: iconColor,
             size: 120.0,
           ),
-          child: icon,
+          child: _child,
         ),
       ),
     );
