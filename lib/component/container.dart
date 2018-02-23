@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import './navigationBar.dart';
 import './bodyCard.dart';
+import '../pages/home.dart';
 
 class MyContainer extends StatefulWidget {
   @override
@@ -16,6 +17,8 @@ class MyContainerState extends State<MyContainer>
   @override
   void initState() {
     super.initState();
+    print("container update");
+    Home homePage = new Home();
 
     _navigationViews = <NavigationIconView>[
       new NavigationIconView(
@@ -46,7 +49,7 @@ class MyContainerState extends State<MyContainer>
 
     _contents = <BodyCard>[
       new BodyCard(
-        child: const Icon(Icons.apps),
+        child: homePage,
         vsync: this,
       ),
       new BodyCard(
@@ -63,16 +66,7 @@ class MyContainerState extends State<MyContainer>
       )
     ];
 
-    for (NavigationIconView view in _navigationViews)
-      view.controller.addListener(_rebuild);
-
     _contents[_currentIndex].controller.value = 1.0;
-  }
-
-  void _rebuild() {
-    setState(() {
-      // Rebuild in order to animate views.
-    });
   }
 
   Widget _buildTransitionsStack() {
