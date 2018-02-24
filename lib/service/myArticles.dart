@@ -10,10 +10,8 @@ const String resp = "resp";
 
 Future<List<MyListInfo>> getMyList() async {
   String url = myUrl("article/getall");
-  print(url);
   Http.Response res = await Http.get(url);
   var data = JSON.decode(res.body);
-  print(data);
 
   if (data[status] != 0) {
     return [];
@@ -56,10 +54,9 @@ Future<MyArtDetail> getDetail(String id) async {
       "Content-Type": "application/json"
     },
   );
-  print(res.body);
 
   Map resp = JSON.decode(res.body);
-  if (resp[status] != 0){
+  if (resp[status] != 0) {
     return null;
   }
 
@@ -72,7 +69,8 @@ MyArtDetail formatDetail(Map cur) {
       title: cur["title"],
       tags: cur["tags"],
       date: cur["date"],
-      content: cur["content"]
+      content: cur["content"],
+      imageUrl: cur["image"]
   );
 
   return article;
