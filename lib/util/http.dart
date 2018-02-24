@@ -1,7 +1,7 @@
 
 
 String myUrl(String path) {
-  return "http://api.littlechao.top" + path;
+  return "http://api.littlechao.top/" + path;
 }
 
 String myPicUrl(String path) {

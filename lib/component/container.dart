@@ -13,11 +13,11 @@ class MyContainerState extends State<MyContainer>
   List<NavigationIconView> _navigationViews;
   List<BodyCard> _contents;
   int _currentIndex = 0;
+  Widget stack;
 
   @override
   void initState() {
     super.initState();
-    print("container update");
     Home homePage = new Home();
 
     _navigationViews = <NavigationIconView>[
@@ -74,23 +74,22 @@ class MyContainerState extends State<MyContainer>
 
      for (BodyCard view in _contents)
       transitions.add(view.transition(context));
-    /*for (NavigationIconView view in _navigationViews)
-      transitions.add(view.transition(context));*/
 
     // We want to have the newly animating (fading in) views on top.
-    transitions.sort((FadeTransition a, FadeTransition b) {
+    /*transitions.sort((FadeTransition a, FadeTransition b) {
       final Animation<double> aAnimation = a.listenable;
       final Animation<double> bAnimation = b.listenable;
       final double aValue = aAnimation.value;
       final double bValue = bAnimation.value;
       return aValue.compareTo(bValue);
-    });
+    });*/
 
     return new Stack(children: transitions);
   }
 
   @override
   Widget build(BuildContext context) {
+    print("container rebuild");
     final BottomNavigationBar botNavBar = new BottomNavigationBar(
       items: _navigationViews
           .map((NavigationIconView navigationView) => navigationView.item)
@@ -98,6 +97,9 @@ class MyContainerState extends State<MyContainer>
       currentIndex: _currentIndex,
       type: BottomNavigationBarType.shifting,
       onTap: (int index) {
+        if(index == _currentIndex){
+          return;
+        }
         setState(() {
           _contents[_currentIndex].controller.reverse();
           _currentIndex = index;
