@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import '../model/myArticle.dart';
 import '../component/aticleListItem.dart';
 import '../service/myArticles.dart';
+import '../pages/myArtiDetail.dart';
+import '../util/util.dart';
 
 const double _kAppBarHeight = 128.0;
+Map articleCache = {};
 
 class Home extends StatefulWidget {
   @override
@@ -48,7 +51,7 @@ class HomeState extends State<Home> {
           final double t = (appBarHeight - kToolbarHeight) /
               (_kAppBarHeight - kToolbarHeight);
           final double extraPadding = new Tween<double>(begin: 10.0, end: 24.0)
-              .lerp(t);
+              .lerp(t) - 5;
           final double logoHeight = appBarHeight - 1.5 * extraPadding;
           return new Padding(
             padding: new EdgeInsets.only(
@@ -56,21 +59,11 @@ class HomeState extends State<Home> {
               bottom: extraPadding,
             ),
             child: new Center(
-              /*child: new Container(
-                child: new Image.asset(
-                  'images/avatar.png',
-                  fit: BoxFit.fitHeight,
-                ),
-                decoration: new BoxDecoration(
-
-                ),
-              ),*/
-
               child: new CircleAvatar(
                 backgroundImage: new AssetImage(
-                    "images/avatar.png",
+                  "images/avatar.png",
                 ),
-                radius: logoHeight / 2 - 5,
+                radius: logoHeight / 2,
                 backgroundColor: Colors.lightBlue,
               ),
             ),
@@ -78,6 +71,19 @@ class HomeState extends State<Home> {
         },
       ),
     );
+  }
+
+  void goDetail(String id) {
+    MyArtDetail article;
+    if (articleCache[id] != null) {
+      article = articleCache[id];
+      goPage(context, "/mydetail", new ArticleDetailPage(article: article));
+      return;
+    }
+    getDetail(id).then((article) {
+      articleCache[id] = article;
+      goPage(context, "/mydetail", new ArticleDetailPage(article: article));
+    });
   }
 
   Widget _buildBody(BuildContext context, double statusBarHeight) {
@@ -95,8 +101,13 @@ class HomeState extends State<Home> {
                   },
                   child: new Container(
                     width: 500.0, //todo
-                    child: new StatelessListItem(
-                        info: info
+                    child: new GestureDetector(
+                      onTap: () {
+                        goDetail(info.id);
+                      },
+                      child: new StatelessListItem(
+                          info: info
+                      ),
                     ),
                   ),
                 );

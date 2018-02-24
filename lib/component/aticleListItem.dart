@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../model/myArticle.dart';
-import '../service/myArticles.dart';
 
 class StatelessListItem extends StatelessWidget {
   StatelessListItem({
@@ -25,93 +24,85 @@ class StatelessListItem extends StatelessWidget {
         .size;
   }
 
-  void goDetail() {
-    getDetail(_info.id).then((article){
-      print(article.id);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final picWidth = 100.0;
-    return new GestureDetector(
-      onTap: () {
-        goDetail();
-      },
-      child: new Container( //todo: change to card
-        padding: const EdgeInsets.symmetric(vertical: 3.0),
-        child: new Container(
-          height: 80.0,
-          color: Colors.white,
-          padding: new EdgeInsets.all(8.0),
-          child: new Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              new Container(
+    return new Container( //todo: change to card
+      padding: const EdgeInsets.symmetric(vertical: 3.0),
+      child: new Container(
+        height: 80.0,
+        color: Colors.white,
+        padding: new EdgeInsets.all(8.0),
+        child: new Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            new Container(
+              child: new Hero(
+                tag: _info.title,
                 child: new Image.network(
                   _info.imageUrl,
                   fit: BoxFit.fitWidth,
                   scale: 1.0,
                   repeat: ImageRepeat.noRepeat,
                 ),
-                width: picWidth,
               ),
+              width: picWidth,
+            ),
 
-              new Container(
-                width: getSize(context).width - picWidth - 50.0,
-                child: new Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    new Container(
-                      //width: getSize(context).width,
-                      child: new Text(
-                        showTitle,
-                        style: new TextStyle(
-                          fontSize: 14.0,
-                          color: Colors.black,
-                        ),
-                        textAlign: TextAlign.left,
+            new Container(
+              width: getSize(context).width - picWidth - 50.0,
+              child: new Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  new Container(
+                    //width: getSize(context).width,
+                    child: new Text(
+                      showTitle,
+                      style: new TextStyle(
+                        fontSize: 14.0,
+                        color: Colors.black,
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 2.0),
+                      textAlign: TextAlign.left,
                     ),
+                    padding: const EdgeInsets.symmetric(vertical: 2.0),
+                  ),
 
-                    new Container(
-                      //width: 500.0,
-                      child: new Row(
-                        children: _info.tags.map((String tag) {
-                          return new GestureDetector(
-                            onTap: () {
-                              print(tag);
-                            },
-                            child: new Text(
-                              '#' + tag + " ",
-                              style: new TextStyle(
-                                fontSize: 12.0,
-                                color: Colors.black54,
-                              ),
+                  new Container(
+                    //width: 500.0,
+                    child: new Row(
+                      children: _info.tags.map((String tag) {
+                        return new GestureDetector(
+                          onTap: () {
+                            print(tag);
+                          },
+                          child: new Text(
+                            '#' + tag + " ",
+                            style: new TextStyle(
+                              fontSize: 12.0,
+                              color: Colors.black54,
                             ),
-                          );
-                        }).toList(),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 1.0),
+                          ),
+                        );
+                      }).toList(),
                     ),
+                    padding: const EdgeInsets.symmetric(vertical: 1.0),
+                  ),
 
-                    new Container(
-                      child: _info.date == null ? null : new Text(
-                        _info.date.substring(0, 10),
-                        style: new TextStyle(
-                          fontSize: 12.0,
-                          color: Colors.black54,
-                        ),
+                  new Container(
+                    child: _info.date == null ? null : new Text(
+                      _info.date.substring(0, 10),
+                      style: new TextStyle(
+                        fontSize: 12.0,
+                        color: Colors.black54,
                       ),
-                    )
-                  ],
-                ),
+                    ),
+                  )
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
