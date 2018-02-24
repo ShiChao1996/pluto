@@ -6,10 +6,15 @@ class StatelessListItem extends StatelessWidget {
     MyListInfo info
   })
       : _info = info,
-        key = new Key(info.title);
+        key = new Key(info.title),
+        showTitle = info.title.length > 20
+            ? info.title.substring(0, 20) + "..."
+            : info.title;
 
   final Key key;
   final MyListInfo _info;
+  final String showTitle;
+
 
   Size getSize(context) {
     return MediaQuery
@@ -41,7 +46,7 @@ class StatelessListItem extends StatelessWidget {
             ),
 
             new Container(
-              width: getSize(context).width - picWidth - 30.0,
+              width: getSize(context).width - picWidth - 50.0,
               child: new Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,14 +54,14 @@ class StatelessListItem extends StatelessWidget {
                   new Container(
                     //width: getSize(context).width,
                     child: new Text(
-                      _info.title,
+                      showTitle,
                       style: new TextStyle(
-                        fontSize: 16.0,
+                        fontSize: 14.0,
                         color: Colors.black,
                       ),
                       textAlign: TextAlign.left,
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    padding: const EdgeInsets.symmetric(vertical: 3.0),
                   ),
 
                   new Container(

@@ -30,7 +30,7 @@ Future<List<MyListInfo>> getMyList()async{
      MyListInfo info = new MyListInfo(
        id: cur["_id"],
        title: cur["title"],
-       tags: [],
+       tags: cur["tags"],
        imageUrl: myPicUrl(cur["image"])
      );
      ret.add(info);
