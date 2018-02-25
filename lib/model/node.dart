@@ -24,16 +24,6 @@
 
 /*
  * Revision History:
- *     Initial: 2018/02/22        ShiChao
+ *     Initial: 2018/02/25        ShiChao
  */
 
-import 'package:flutter/material.dart';
-
-void goPage(BuildContext context, String route, Widget comp){
-  Navigator.push(context, new MaterialPageRoute<Null>(
-    settings: new RouteSettings(name: route),
-    builder: (BuildContext context) {
-      return comp;
-    },
-  ));
-}
