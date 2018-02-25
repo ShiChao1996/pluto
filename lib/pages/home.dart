@@ -28,14 +28,11 @@
  */
 
 import 'package:flutter/material.dart';
-import '../model/myArticle.dart';
 import '../component/nodeArticleItem.dart';
 import '../service/node.dart';
-import '../pages/myArtiDetail.dart';
 import '../model/node.dart';
-import '../util/util.dart';
 
-const double _kAppBarHeight = 128.0;
+const double _kAppBarHeight = 200.0;
 Map articleCache = {};
 
 class Home extends StatefulWidget {
@@ -43,7 +40,7 @@ class Home extends StatefulWidget {
   final setList;
   final addList;
 
-  const Home(this.list,this.setList,this.addList);
+  const Home(this.list, this.setList, this.addList);
 
   @override
   HomeState createState() {
@@ -59,7 +56,7 @@ class HomeState extends State<Home> {
   @override
   initState() {
     super.initState();
-    this.setState((){
+    this.setState(() {
       artiList = widget.list;
     });
     print("home initState, list length: ${artiList.length}");
@@ -78,7 +75,7 @@ class HomeState extends State<Home> {
     return new SliverAppBar(
       pinned: true,
       expandedHeight: _kAppBarHeight,
-      actions: <Widget>[
+      /*actions: <Widget>[
         new IconButton(
           icon: const Icon(Icons.search),
           tooltip: 'Search',
@@ -88,32 +85,36 @@ class HomeState extends State<Home> {
             ));
           },
         ),
-      ],
-      flexibleSpace: new LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          final Size size = constraints.biggest;
-          final double appBarHeight = size.height - statusBarHeight;
-          final double t = (appBarHeight - kToolbarHeight) /
-              (_kAppBarHeight - kToolbarHeight);
-          final double extraPadding = new Tween<double>(begin: 10.0, end: 24.0)
-              .lerp(t) - 5;
-          final double logoHeight = appBarHeight - 1.5 * extraPadding;
-          return new Padding(
-            padding: new EdgeInsets.only(
-              top: statusBarHeight + 0.5 * extraPadding,
-              bottom: extraPadding,
+      ],*/
+      flexibleSpace: new FlexibleSpaceBar(
+        title: const Text(
+          'Node Community',
+          style: const TextStyle(
+            fontSize: 16.0,
+          ),
+        ),
+        background: new Stack(
+          fit: StackFit.expand,
+          children: <Widget>[
+            new Image.asset(
+              'images/node_dark.jpg',
+              fit: BoxFit.fill,
+              height: _kAppBarHeight,
             ),
-            child: new Center(
-              child: new CircleAvatar(
-                backgroundImage: new AssetImage(
-                  "images/avatar.png",
+            // This gradient ensures that the toolbar icons are distinct
+            // against the background image.
+            const DecoratedBox(
+              decoration: const BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: const FractionalOffset(0.5, 0.0),
+                  end: const FractionalOffset(0.5, 0.30),
+                  colors: const <Color>[
+                    const Color(0x60000000), const Color(0x00000000)],
                 ),
-                radius: logoHeight / 2,
-                backgroundColor: Colors.lightBlue,
               ),
             ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }
@@ -129,6 +130,19 @@ class HomeState extends State<Home> {
       articleCache[id] = article;
       goPage(context, "/mydetail", new ArticleDetailPage(article: article));
     });*/
+    //goPage(context, "/mydetail", new ArticleDetailPage(article: article));
+
+  }
+
+  refresh() async {
+    getListByTab("share").then((res){
+      this.setState((){
+        artiList = res;
+      });
+      widget.setList(res);
+    });
+
+    return true;
   }
 
   Widget _buildBody(BuildContext context, double statusBarHeight) {
@@ -142,7 +156,7 @@ class HomeState extends State<Home> {
               children: artiList.map((NodeArticle article) {
                 return new GestureDetector(
                   onTap: () {
-                    //gotoPage(info);
+                    goDetail(article.id);
                   },
                   child: new Container(
                       width: 500.0, //todo
@@ -166,11 +180,14 @@ class HomeState extends State<Home> {
         .top;
 
     return new Container(
-      child: new CustomScrollView(
-        slivers: <Widget>[
-          _buildAppBar(context, statusBarHeight),
-          _buildBody(context, statusBarHeight),
-        ],
+      child: new RefreshIndicator(
+        onRefresh: refresh,
+        child: new CustomScrollView(
+          slivers: <Widget>[
+            _buildAppBar(context, statusBarHeight),
+            _buildBody(context, statusBarHeight),
+          ],
+        ),
       ),
     );
   }
