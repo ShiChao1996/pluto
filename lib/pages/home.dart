@@ -39,20 +39,35 @@ const double _kAppBarHeight = 128.0;
 Map articleCache = {};
 
 class Home extends StatefulWidget {
+  final List<NodeArticle> list;
+  final setList;
+  final addList;
+
+  const Home(this.list,this.setList,this.addList);
+
   @override
-  HomeState createState() => new HomeState();
+  HomeState createState() {
+    return new HomeState();
+  }
 }
 
 class HomeState extends State<Home> {
   List<NodeArticle> artiList = [];
+
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   initState() {
     super.initState();
+    this.setState((){
+      artiList = widget.list;
+    });
+    print("home initState, list length: ${artiList.length}");
+
     if (artiList.length == 0) {
       getListByTab("share").then((res) {
-        this.setState((){
+        widget.setList(res);
+        this.setState(() {
           artiList = res;
         });
       });

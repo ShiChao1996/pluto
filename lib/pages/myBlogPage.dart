@@ -38,21 +38,31 @@ const double _kAppBarHeight = 128.0;
 Map articleCache = {};
 
 class MyBlogPage extends StatefulWidget {
+  final List<MyListInfo> list;
+  final setList;
+  final addList;
+
+  const MyBlogPage(this.list,this.setList,this.addList);
+
   @override
   MyBlogPageState createState() => new MyBlogPageState();
 }
 
 class MyBlogPageState extends State<MyBlogPage> {
-  List<MyListInfo> infos = [];
+  List<MyListInfo> articleList = [];
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   initState() {
     super.initState();
-    if (infos.length == 0) {
+    this.setState((){
+      articleList = widget.list;
+    });
+    if (articleList.length == 0) {
       getMyList().then((List<MyListInfo> l) {
+        widget.setList(l);
         this.setState(() {
-          infos = l;
+          articleList = l;
         });
       });
     }
@@ -123,7 +133,7 @@ class MyBlogPageState extends State<MyBlogPage> {
         delegate: new SliverChildBuilderDelegate(
               (BuildContext context, int index) {
             return new Column(
-              children: infos.map((MyListInfo info) {
+              children: articleList.map((MyListInfo info) {
                 return new GestureDetector(
                   onTap: () {
                     //gotoPage(info);

@@ -34,7 +34,7 @@ class BodyCard {
     Widget child,
     TickerProvider vsync
   })
-      : _child = child,
+      : child = child,
         controller = new AnimationController(
             vsync: vsync, duration: kThemeAnimationDuration) {
     animation = new CurvedAnimation(
@@ -45,7 +45,7 @@ class BodyCard {
 
   final AnimationController controller;
   CurvedAnimation animation;
-  final Widget _child;
+  final Widget child;
 
   FadeTransition transition(BuildContext context) {
     Color iconColor;
@@ -64,7 +64,7 @@ class BodyCard {
             color: iconColor,
             size: 120.0,
           ),
-          child: _child,
+          child: child,
         ),
       ),
     );

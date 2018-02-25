@@ -32,6 +32,8 @@ import './navigationBar.dart';
 import './bodyCard.dart';
 import '../pages/home.dart';
 import '../pages/myBlogPage.dart';
+import '../model/node.dart';
+import '../model/myArticle.dart';
 
 class MyContainer extends StatefulWidget {
   @override
@@ -42,14 +44,18 @@ class MyContainerState extends State<MyContainer>
     with TickerProviderStateMixin {
   List<NavigationIconView> _navigationViews;
   List<BodyCard> _contents;
+  List<NodeArticle> nodeList = [];
+  List<MyListInfo> myArtList = [];
   int _currentIndex = 0;
   Widget stack;
 
   @override
   void initState() {
     super.initState();
-    Home homePage = new Home();
-    MyBlogPage myBlog = new MyBlogPage();
+    print("container initstate");
+    Home homePage = new Home(nodeList, this.setNodeList, this.addNodeList);
+    MyBlogPage myBlog = new MyBlogPage(
+        myArtList, this.setMyList, this.addMyList);
 
     _navigationViews = <NavigationIconView>[
       new NavigationIconView(
@@ -100,10 +106,44 @@ class MyContainerState extends State<MyContainer>
     _contents[_currentIndex].controller.value = 1.0;
   }
 
+  void setNodeList(list) {
+    this.setState(() {
+      nodeList = list;
+      _contents[0] = new BodyCard(
+          child: new Home(
+              nodeList, (list) => this.setNodeList(list), this.addNodeList),
+          vsync: this
+      );
+    });
+  }
+
+  void addNodeList(List<NodeArticle> list) {
+    this.setState(() {
+      nodeList.addAll(list);
+    });
+  }
+
+  void setMyList(List<MyListInfo> list) {
+    this.setState(() {
+      myArtList = list;
+    });
+    _contents[1] = new BodyCard(
+        child: new MyBlogPage(
+            myArtList, this.setMyList, this.addMyList),
+        vsync: this
+    );
+  }
+
+  void addMyList(List<MyListInfo> list) {
+    this.setState(() {
+      myArtList.addAll(list);
+    });
+  }
+
   Widget _buildTransitionsStack() {
     final List<FadeTransition> transitions = <FadeTransition>[];
 
-     for (BodyCard view in _contents)
+    for (BodyCard view in _contents)
       transitions.add(view.transition(context));
 
     // We want to have the newly animating (fading in) views on top.
@@ -118,9 +158,15 @@ class MyContainerState extends State<MyContainer>
     return new Stack(children: transitions);
   }
 
+  Widget getPage(int index) {
+    /*if(index == _currentIndex){
+      return ;
+    }*/
+    return _contents[index].child;
+  }
+
   @override
   Widget build(BuildContext context) {
-    print("container rebuild");
     final BottomNavigationBar botNavBar = new BottomNavigationBar(
       items: _navigationViews
           .map((NavigationIconView navigationView) => navigationView.item)
@@ -128,7 +174,7 @@ class MyContainerState extends State<MyContainer>
       currentIndex: _currentIndex,
       type: BottomNavigationBarType.shifting,
       onTap: (int index) {
-        if(index == _currentIndex){
+        if (index == _currentIndex) {
           return;
         }
         setState(() {
@@ -140,9 +186,7 @@ class MyContainerState extends State<MyContainer>
     );
 
     return new Scaffold(
-      body: new Center(
-          child: _buildTransitionsStack()
-      ),
+      body: getPage(_currentIndex),
       bottomNavigationBar: botNavBar,
     );
   }
