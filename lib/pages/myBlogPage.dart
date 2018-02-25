@@ -24,36 +24,35 @@
 
 /*
  * Revision History:
- *     Initial: 2018/02/22        ShiChao
+ *     Initial: 2018/02/25        ShiChao
  */
 
 import 'package:flutter/material.dart';
 import '../model/myArticle.dart';
-import '../component/nodeArticleItem.dart';
-import '../service/node.dart';
+import '../component/aticleListItem.dart';
+import '../service/myArticles.dart';
 import '../pages/myArtiDetail.dart';
-import '../model/node.dart';
 import '../util/util.dart';
 
 const double _kAppBarHeight = 128.0;
 Map articleCache = {};
 
-class Home extends StatefulWidget {
+class MyBlogPage extends StatefulWidget {
   @override
-  HomeState createState() => new HomeState();
+  MyBlogPageState createState() => new MyBlogPageState();
 }
 
-class HomeState extends State<Home> {
-  List<NodeArticle> artiList = [];
+class MyBlogPageState extends State<MyBlogPage> {
+  List<MyListInfo> infos = [];
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   initState() {
     super.initState();
-    if (artiList.length == 0) {
-      getListByTab("share").then((res) {
-        this.setState((){
-          artiList = res;
+    if (infos.length == 0) {
+      getMyList().then((List<MyListInfo> l) {
+        this.setState(() {
+          infos = l;
         });
       });
     }
@@ -104,7 +103,7 @@ class HomeState extends State<Home> {
   }
 
   void goDetail(String id) {
-    /* MyArtDetail article;
+    MyArtDetail article;
     if (articleCache[id] != null) {
       article = articleCache[id];
       goPage(context, "/mydetail", new ArticleDetailPage(article: article));
@@ -113,7 +112,7 @@ class HomeState extends State<Home> {
     getDetail(id).then((article) {
       articleCache[id] = article;
       goPage(context, "/mydetail", new ArticleDetailPage(article: article));
-    });*/
+    });
   }
 
   Widget _buildBody(BuildContext context, double statusBarHeight) {
@@ -124,14 +123,21 @@ class HomeState extends State<Home> {
         delegate: new SliverChildBuilderDelegate(
               (BuildContext context, int index) {
             return new Column(
-              children: artiList.map((NodeArticle article) {
+              children: infos.map((MyListInfo info) {
                 return new GestureDetector(
                   onTap: () {
                     //gotoPage(info);
                   },
                   child: new Container(
-                      width: 500.0, //todo
-                      child: new NodeArticleItem(article: article,)
+                    width: 500.0, //todo
+                    child: new GestureDetector(
+                      onTap: () {
+                        goDetail(info.id);
+                      },
+                      child: new myArticleItem(
+                          info: info
+                      ),
+                    ),
                   ),
                 );
               }).toList(),

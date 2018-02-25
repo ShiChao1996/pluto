@@ -31,6 +31,7 @@ import 'package:flutter/material.dart';
 import './navigationBar.dart';
 import './bodyCard.dart';
 import '../pages/home.dart';
+import '../pages/myBlogPage.dart';
 
 class MyContainer extends StatefulWidget {
   @override
@@ -48,6 +49,7 @@ class MyContainerState extends State<MyContainer>
   void initState() {
     super.initState();
     Home homePage = new Home();
+    MyBlogPage myBlog = new MyBlogPage();
 
     _navigationViews = <NavigationIconView>[
       new NavigationIconView(
@@ -82,7 +84,7 @@ class MyContainerState extends State<MyContainer>
         vsync: this,
       ),
       new BodyCard(
-        child: const Icon(Icons.backup),
+        child: myBlog,
         vsync: this,
       ),
       new BodyCard(

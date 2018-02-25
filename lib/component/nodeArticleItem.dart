@@ -24,24 +24,25 @@
 
 /*
  * Revision History:
- *     Initial: 2018/02/22        ShiChao
+ *     Initial: 2018/02/25        ShiChao
  */
 
 import 'package:flutter/material.dart';
-import '../model/myArticle.dart';
 
-class myArticleItem extends StatelessWidget {
-  myArticleItem({
-    MyListInfo info
+import '../model/node.dart';
+
+class NodeArticleItem extends StatelessWidget {
+  NodeArticleItem({
+    NodeArticle article
   })
-      : _info = info,
-        key = new Key(info.title),
-        showTitle = info.title.length > 25
-            ? info.title.substring(0, 25) + "..."
-            : info.title;
+      : article = article,
+        key = new Key(article.title),
+        showTitle = article.title.length > 25
+            ? article.title.substring(0, 25) + "..."
+            : article.title;
 
   final Key key;
-  final MyListInfo _info;
+  final NodeArticle article;
   final String showTitle;
 
   //final String date;
@@ -55,28 +56,32 @@ class myArticleItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final picWidth = 100.0;
+    final picWidth = 60.0;
     return new Container( //todo: change to card
       padding: const EdgeInsets.symmetric(vertical: 3.0),
       child: new Container(
-        height: 80.0,
+        height: 90.0,
         color: Colors.white,
         padding: new EdgeInsets.all(8.0),
         child: new Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            new Container(
-              child: new Hero(
-                tag: _info.title,
-                child: new Image.network(
-                  _info.imageUrl,
-                  fit: BoxFit.fitWidth,
-                  scale: 1.0,
-                  repeat: ImageRepeat.noRepeat,
+            new Center(
+              /*child: new Image.network(
+                article.authorvatar,
+                fit: BoxFit.fitWidth,
+                scale: 1.0,
+                repeat: ImageRepeat.noRepeat,
+              ),*/
+              child: new CircleAvatar(
+                backgroundImage: new NetworkImage(
+                  article.authorvatar,
+                  scale: 1.0
                 ),
+                radius: picWidth/2,
+                backgroundColor: Colors.lightBlue,
               ),
-              width: picWidth,
             ),
 
             new Container(
@@ -95,28 +100,23 @@ class myArticleItem extends StatelessWidget {
                       ),
                       textAlign: TextAlign.left,
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 2.0),
-                  ),
-
-                  new Container(
-                    //width: 500.0,
-                    child: new Row(
-                      children: _info.tags.map((String tag) {
-                        return new Text(
-                          '#' + tag + " ",
-                          style: new TextStyle(
-                            fontSize: 12.0,
-                            color: Colors.black54,
-                          ),
-                        );
-                      }).toList(),
-                    ),
                     padding: const EdgeInsets.symmetric(vertical: 1.0),
                   ),
 
                   new Container(
-                    child: _info.date == null ? null : new Text(
-                      _info.date.substring(0, 10),
+                    //width: 500.0,
+                    child: new Text(
+                      "阅读量：${article.visit}  回复：${article.reply}",
+                      style: new TextStyle(
+                        fontSize: 12.0,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ),
+
+                  new Container(
+                    child: article.createAt == null ? null : new Text(
+                      article.createAt.substring(0, 10),
                       style: new TextStyle(
                         fontSize: 12.0,
                         color: Colors.black54,

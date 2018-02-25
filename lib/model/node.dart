@@ -27,3 +27,14 @@
  *     Initial: 2018/02/25        ShiChao
  */
 
+class NodeArticle{
+  final String id;
+  final String title;
+  final String tab;
+  final String createAt;
+  final int reply;
+  final int visit;
+  final String authorvatar;
+
+  NodeArticle({this.id,this.title,this.authorvatar,this.createAt,this.reply,this.tab,this.visit});
+}

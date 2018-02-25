@@ -24,22 +24,52 @@
 
 /*
  * Revision History:
- *     Initial: 2018/02/23        ShiChao
+ *     Initial: 2018/02/25        ShiChao
  */
 
 
-String myUrl(String path) {
-  return "http://api.littlechao.top/" + path;
-}
+import 'package:http/http.dart' as Http;
+import 'dart:convert';
+import 'dart:async';
 
-String myPicUrl(String path) {
-  if(path == null){
-    return "http://avatar.csdn.net/6/F/2/2_hekaiyou.jpg";
+import '../model/node.dart';
+import '../util/http.dart';
+
+const String status = "success";
+const String resp = "data";
+const int numPerRequest = 10;
+
+Future<List<NodeArticle>> getListByTab(String tab) async {
+  String url = nodeUrl("topics?limit=${numPerRequest}&tab=${tab}");
+  Http.Response res = await Http.get(url);
+  var data = JSON.decode(res.body);
+  print("status: ${data[status]}");
+
+  if (data[status] != true) {
+    return [];
   }
 
-  return "http://image.littlechao.top/" + path.substring(15);
+  var list = data[resp];
+  return formatList(list);
 }
 
-String nodeUrl(String path) {
-  return "https://cnodejs.org/api/v1/" + path;
+List<NodeArticle> formatList(list) {
+  int len = list.length;
+  List<NodeArticle> ret = [];
+  for (int i = 0; i < len; i++) {
+    var cur = list[i];
+    NodeArticle info = new NodeArticle(
+      id: cur["id"],
+      title: cur["title"],
+      tab: cur["tab"],
+      reply: cur["reply_count"],
+      createAt: cur["create_at"],
+      visit: cur["visit_count"],
+      authorvatar: cur["author"]["avatar_url"]
+    );
+    ret.add(info);
+  }
+
+  print("get node data");
+  return ret;
 }
