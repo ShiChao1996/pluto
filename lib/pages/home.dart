@@ -28,9 +28,14 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:flutter_web_view/flutter_web_view.dart';
+
 import '../component/nodeArticleItem.dart';
 import '../service/node.dart';
 import '../model/node.dart';
+import '../util/util.dart';
+import '../util/http.dart';
+import './webview.dart';
 
 const double _kAppBarHeight = 200.0;
 Map articleCache = {};
@@ -50,6 +55,9 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> {
   List<NodeArticle> artiList = [];
+  String _redirectedToUrl;
+  FlutterWebView flutterWebView = new FlutterWebView();
+  bool _isLoading = false;
 
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -120,18 +128,59 @@ class HomeState extends State<Home> {
   }
 
   void goDetail(String id) {
-    /* MyArtDetail article;
-    if (articleCache[id] != null) {
-      article = articleCache[id];
-      goPage(context, "/mydetail", new ArticleDetailPage(article: article));
+    String url = nodeUrl("topic/${id}");
+    launchWebViewExample(url);
+  }
+
+  void launchWebViewExample(String url) {
+    if (flutterWebView.isLaunched) {
       return;
     }
-    getDetail(id).then((article) {
-      articleCache[id] = article;
-      goPage(context, "/mydetail", new ArticleDetailPage(article: article));
-    });*/
-    //goPage(context, "/mydetail", new ArticleDetailPage(article: article));
 
+    flutterWebView.launch(url,
+        headers: {
+          "X-SOME-HEADER": "MyCustomHeader",
+        },
+        javaScriptEnabled: false,
+        inlineMediaEnabled: true,
+        toolbarActions: [
+          new ToolbarAction("Close", 1),
+          new ToolbarAction("Reload", 2)
+        ],
+        barColor: Colors.blue,
+        tintColor: Colors.white
+    );
+    flutterWebView.onToolbarAction.listen((identifier) {
+      switch (identifier) {
+        case 1:
+          flutterWebView.dismiss();
+          break;
+        case 2:
+          reload(url);
+          break;
+      }
+    });
+    flutterWebView.listenForRedirect("mobile://test.com", true);
+
+    flutterWebView.onWebViewDidStartLoading.listen((url) {
+      setState(() => _isLoading = true);
+    });
+    flutterWebView.onWebViewDidLoad.listen((url) {
+      setState(() => _isLoading = false);
+    });
+    flutterWebView.onRedirect.listen((url) {
+      flutterWebView.dismiss();
+      setState(() => _redirectedToUrl = url);
+    });
+  }
+
+  void reload(String url) {
+    flutterWebView.load(
+      url,
+      headers: {
+        "X-SOME-HEADER": "MyCustomHeader",
+      },
+    );
   }
 
   refresh() async {

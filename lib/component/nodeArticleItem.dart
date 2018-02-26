@@ -68,12 +68,6 @@ class NodeArticleItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             new Center(
-              /*child: new Image.network(
-                article.authorvatar,
-                fit: BoxFit.fitWidth,
-                scale: 1.0,
-                repeat: ImageRepeat.noRepeat,
-              ),*/
               child: new CircleAvatar(
                 backgroundImage: new NetworkImage(
                   article.authorvatar,

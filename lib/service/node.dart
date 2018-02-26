@@ -40,7 +40,7 @@ const String resp = "data";
 const int numPerRequest = 10;
 
 Future<List<NodeArticle>> getListByTab(String tab) async {
-  String url = nodeUrl("topics?limit=${numPerRequest}&tab=${tab}");
+  String url = nodeApiUrl("topics?limit=${numPerRequest}&tab=${tab}");
   Http.Response res = await Http.get(url);
   var data = JSON.decode(res.body);
   print("status: ${data[status]}");

@@ -40,6 +40,10 @@ String myPicUrl(String path) {
   return "http://image.littlechao.top/" + path.substring(15);
 }
 
-String nodeUrl(String path) {
+String nodeApiUrl(String path) {
   return "https://cnodejs.org/api/v1/" + path;
+}
+
+String nodeUrl(String path){
+  return "https://cnodejs.org/" + path;
 }
