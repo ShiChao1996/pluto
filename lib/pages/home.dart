@@ -67,7 +67,6 @@ class HomeState extends State<Home> {
     this.setState(() {
       artiList = widget.list;
     });
-    print("home initState, list length: ${artiList.length}");
 
     if (artiList.length == 0) {
       getListByTab("share").then((res) {
@@ -129,6 +128,7 @@ class HomeState extends State<Home> {
 
   void goDetail(String id) {
     String url = nodeUrl("topic/${id}");
+    flutterWebView.dismiss();   //close the last webview to open new
     launchWebViewExample(url);
   }
 
