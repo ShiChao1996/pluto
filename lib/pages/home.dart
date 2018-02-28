@@ -33,12 +33,11 @@ import 'package:flutter_web_view/flutter_web_view.dart';
 import '../component/nodeArticleItem.dart';
 import '../service/node.dart';
 import '../model/node.dart';
-import '../util/util.dart';
 import '../util/http.dart';
-import './webview.dart';
 
 const double _kAppBarHeight = 200.0;
 Map articleCache = {};
+int pageIndex = 0;
 
 class Home extends StatefulWidget {
   final List<NodeArticle> list;
@@ -58,6 +57,7 @@ class HomeState extends State<Home> {
   String _redirectedToUrl;
   FlutterWebView flutterWebView = new FlutterWebView();
   bool _isLoading = false;
+  bool bottomLoading = false;
 
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -69,8 +69,9 @@ class HomeState extends State<Home> {
     });
 
     if (artiList.length == 0) {
-      getListByTab("share").then((res) {
+      getListByTab("share", null, null).then((res) {
         widget.setList(res);
+        pageIndex = 1;
         this.setState(() {
           artiList = res;
         });
@@ -128,7 +129,7 @@ class HomeState extends State<Home> {
 
   void goDetail(String id) {
     String url = nodeUrl("topic/${id}");
-    flutterWebView.dismiss();   //close the last webview to open new
+    flutterWebView.dismiss(); //close the last webview to open new
     launchWebViewExample(url);
   }
 
@@ -184,14 +185,29 @@ class HomeState extends State<Home> {
   }
 
   refresh() async {
-    getListByTab("share").then((res){
-      this.setState((){
+    getListByTab("share", null, null).then((res) {
+      pageIndex = 1;
+      this.setState(() {
         artiList = res;
       });
       widget.setList(res);
     });
 
     return true;
+  }
+
+  loadMore() async {
+    this.setState(() {
+      bottomLoading = true;
+    });
+    getListByTab("share", null, pageIndex).then((res) {
+      pageIndex += 1;
+      this.setState(() {
+        bottomLoading = false;
+        artiList.addAll(res);
+      });
+      widget.addList(res);
+    });
   }
 
   Widget _buildBody(BuildContext context, double statusBarHeight) {
@@ -235,6 +251,33 @@ class HomeState extends State<Home> {
           slivers: <Widget>[
             _buildAppBar(context, statusBarHeight),
             _buildBody(context, statusBarHeight),
+            new SliverFixedExtentList(
+              itemExtent: 50.0,
+              delegate: new SliverChildBuilderDelegate(
+                    (BuildContext context, int index) {
+                  return new Center(
+                    child: bottomLoading ?
+                    const CircularProgressIndicator()
+                        :
+                    new GestureDetector(
+                      onTap: loadMore,
+                      child: new CircleAvatar(
+                        child: new Text(
+                          "more",
+                          style: new TextStyle(
+                            fontSize: 12.0,
+                            color: Colors.white,
+                          ),
+                        ),
+                        radius: 20.0,
+                        backgroundColor: Colors.blue,
+                      ),
+                    ),
+                  );
+                },
+                childCount: 1,
+              ),
+            ),
           ],
         ),
       ),

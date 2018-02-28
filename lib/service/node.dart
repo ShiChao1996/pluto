@@ -38,9 +38,16 @@ import '../util/http.dart';
 const String status = "success";
 const String resp = "data";
 const int numPerRequest = 10;
+int pageIndex = 0;
 
-Future<List<NodeArticle>> getListByTab(String tab) async {
-  String url = nodeApiUrl("topics?limit=${numPerRequest}&tab=${tab}");
+Future<List<NodeArticle>> getListByTab(String tab, int limit, int page) async {
+  if(limit == null){
+    limit = numPerRequest;
+  }
+  if(page == null){
+    page = 0;
+  }
+  String url = nodeApiUrl("topics?limit=${limit}&tab=${tab}&page=${page}");
   Http.Response res = await Http.get(url);
   var data = JSON.decode(res.body);
   print("status: ${data[status]}");
