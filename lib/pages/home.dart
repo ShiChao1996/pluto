@@ -37,7 +37,7 @@ import '../util/http.dart';
 
 const double _kAppBarHeight = 200.0;
 Map articleCache = {};
-int pageIndex = 0;
+int pageIndex = 1;
 
 class Home extends StatefulWidget {
   final List<NodeArticle> list;
@@ -58,6 +58,7 @@ class HomeState extends State<Home> {
   FlutterWebView flutterWebView = new FlutterWebView();
   bool _isLoading = false;
   bool bottomLoading = false;
+  bool refreshLoading = false;
 
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -69,10 +70,14 @@ class HomeState extends State<Home> {
     });
 
     if (artiList.length == 0) {
+      this.setState(() {
+        refreshLoading = true;
+      });
       getListByTab("share", null, null).then((res) {
         widget.setList(res);
         pageIndex = 1;
         this.setState(() {
+          refreshLoading = false;
           artiList = res;
         });
       });
@@ -186,7 +191,7 @@ class HomeState extends State<Home> {
 
   refresh() async {
     getListByTab("share", null, null).then((res) {
-      pageIndex = 1;
+      pageIndex = 2;
       this.setState(() {
         artiList = res;
       });
@@ -200,8 +205,8 @@ class HomeState extends State<Home> {
     this.setState(() {
       bottomLoading = true;
     });
+    pageIndex += 1;
     getListByTab("share", null, pageIndex).then((res) {
-      pageIndex += 1;
       this.setState(() {
         bottomLoading = false;
         artiList.addAll(res);
@@ -250,37 +255,51 @@ class HomeState extends State<Home> {
         child: new CustomScrollView(
           slivers: <Widget>[
             _buildAppBar(context, statusBarHeight),
+            refreshLoading ?
+            buildSliver(
+                new CircularProgressIndicator(), 1)
+                :
             _buildBody(context, statusBarHeight),
-            new SliverFixedExtentList(
-              itemExtent: 50.0,
-              delegate: new SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                  return new Center(
-                    child: bottomLoading ?
-                    const CircularProgressIndicator()
-                        :
-                    new GestureDetector(
-                      onTap: loadMore,
-                      child: new CircleAvatar(
-                        child: new Text(
-                          "more",
-                          style: new TextStyle(
-                            fontSize: 12.0,
-                            color: Colors.white,
-                          ),
+            refreshLoading ?
+            buildSliver(null, 1)
+                :
+            buildSliver(
+                new Center(
+                  child: bottomLoading ?
+                  new CircularProgressIndicator()
+                      :
+                  new GestureDetector(
+                    onTap: loadMore,
+                    child: new CircleAvatar(
+                      child: new Text(
+                        "more",
+                        style: new TextStyle(
+                          fontSize: 12.0,
+                          color: Colors.white,
                         ),
-                        radius: 20.0,
-                        backgroundColor: Colors.blue,
                       ),
+                      radius: 20.0,
+                      backgroundColor: Colors.blue,
                     ),
-                  );
-                },
-                childCount: 1,
-              ),
-            ),
+                  ),
+                ), 1),
           ],
         ),
       ),
     );
   }
+}
+
+Widget buildSliver(Widget child, int count) {
+  return new SliverFixedExtentList(
+    itemExtent: 50.0,
+    delegate: new SliverChildBuilderDelegate(
+          (BuildContext context, int index) {
+        return new Center(
+          child: child,
+        );
+      },
+      childCount: count,
+    ),
+  );
 }
